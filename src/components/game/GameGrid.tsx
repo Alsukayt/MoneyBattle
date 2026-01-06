@@ -28,10 +28,10 @@ const GameGrid = ({
 
   return (
     <div 
-      className="grid gap-1 p-3 bg-card/50 rounded-xl border border-border"
+      className="grid gap-1.5 p-4 bg-card/50 rounded-xl border border-border"
       style={{ 
         gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))`,
-        maxWidth: size <= 5 ? '300px' : size <= 8 ? '400px' : '500px'
+        maxWidth: size <= 5 ? '400px' : size <= 8 ? '500px' : '600px'
       }}
     >
       {Array.from({ length: size * size }).map((_, index) => {
