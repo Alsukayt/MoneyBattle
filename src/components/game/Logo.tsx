@@ -2,19 +2,19 @@ import { Coins } from 'lucide-react';
 
 const Logo = () => {
   return (
-    <div className="flex items-center gap-3 select-none">
+    <div className="flex flex-col items-center gap-2 select-none">
       <div className="relative">
-        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-yellow-500 flex items-center justify-center shadow-lg">
-          <Coins className="w-8 h-8 text-primary-foreground" />
+        <div className="w-16 h-16 bg-primary border-4 border-b-8 border-r-8 border-primary/60 flex items-center justify-center">
+          <Coins className="w-10 h-10 text-primary-foreground" />
         </div>
-        <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-secondary animate-pulse" />
+        <div className="absolute -top-2 -right-2 w-5 h-5 bg-secondary border-2 border-secondary/60 animate-bounce" />
       </div>
-      <div>
-        <h1 className="text-3xl font-black tracking-tight">
-          <span className="text-primary text-glow">DAPTS</span>
-          <span className="text-foreground ml-1">Money Battle</span>
+      <div className="text-center mt-2">
+        <h1 className="text-2xl sm:text-3xl tracking-tight leading-relaxed">
+          <span className="text-primary text-glow block">DAPTS</span>
+          <span className="text-foreground text-lg sm:text-xl block mt-1">MONEY BATTLE</span>
         </h1>
-        <p className="text-muted-foreground text-sm font-medium">Hunt the coins, win the game!</p>
+        <p className="text-muted-foreground text-xs mt-2">HUNT THE COINS!</p>
       </div>
     </div>
   );

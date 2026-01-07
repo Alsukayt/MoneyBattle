@@ -38,32 +38,38 @@ const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-background via-background to-secondary/10">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background">
+      {/* Pixel grid pattern */}
+      <div className="fixed inset-0 opacity-5 pointer-events-none" style={{
+        backgroundImage: 'linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)',
+        backgroundSize: '16px 16px'
+      }} />
+      
+      <div className="w-full max-w-md space-y-8 relative z-10">
         <div className="flex justify-center">
           <Logo />
         </div>
 
         {mode === 'home' && (
           <Card className="card-glow space-y-4">
-            <h2 className="text-xl font-bold text-center text-foreground">Welcome, Player!</h2>
-            <p className="text-muted-foreground text-center text-sm">
-              Hide your coins, hunt your opponent's treasure. First to find all coins wins!
+            <h2 className="text-base text-center text-foreground">WELCOME PLAYER!</h2>
+            <p className="text-muted-foreground text-center text-xs leading-relaxed">
+              Hide your coins, hunt your opponent's treasure!
             </p>
-            <div className="space-y-3 pt-4">
+            <div className="space-y-4 pt-4">
               <Button 
-                className="btn-gold w-full text-lg"
+                className="btn-gold w-full"
                 onClick={() => setMode('create')}
               >
-                <Plus className="w-5 h-5 mr-2" />
-                Create Game
+                <Plus className="w-4 h-4 mr-2" />
+                CREATE GAME
               </Button>
               <Button 
-                className="btn-purple w-full text-lg"
+                className="btn-purple w-full"
                 onClick={() => setMode('join')}
               >
-                <Users className="w-5 h-5 mr-2" />
-                Join Game
+                <Users className="w-4 h-4 mr-2" />
+                JOIN GAME
               </Button>
             </div>
           </Card>
@@ -71,10 +77,10 @@ const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
 
         {mode === 'create' && (
           <Card className="card-glow space-y-4">
-            <h2 className="text-xl font-bold text-foreground">Create New Game</h2>
+            <h2 className="text-base text-foreground">CREATE GAME</h2>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="nickname" className="text-foreground">Your Nickname</Label>
+                <Label htmlFor="nickname" className="text-foreground text-xs">NICKNAME</Label>
                 <Input
                   id="nickname"
                   value={nickname}
@@ -82,25 +88,25 @@ const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
                     setNickname(e.target.value);
                     setError('');
                   }}
-                  placeholder="Enter your name..."
-                  className="mt-1 bg-background border-border"
+                  placeholder="ENTER NAME..."
+                  className="mt-2 bg-background border-4 border-border uppercase"
                   maxLength={20}
                 />
               </div>
-              {error && <p className="text-destructive text-sm">{error}</p>}
+              {error && <p className="text-destructive text-xs">{error}</p>}
               <div className="flex gap-3">
                 <Button 
                   variant="outline" 
-                  className="flex-1"
+                  className="flex-1 border-4 border-border"
                   onClick={() => setMode('home')}
                 >
-                  Back
+                  BACK
                 </Button>
                 <Button 
                   className="btn-gold flex-1"
                   onClick={handleCreate}
                 >
-                  Create Game
+                  CREATE
                 </Button>
               </div>
             </div>
@@ -109,10 +115,10 @@ const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
 
         {mode === 'join' && (
           <Card className="card-glow space-y-4">
-            <h2 className="text-xl font-bold text-foreground">Join Game</h2>
+            <h2 className="text-base text-foreground">JOIN GAME</h2>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="join-nickname" className="text-foreground">Your Nickname</Label>
+                <Label htmlFor="join-nickname" className="text-foreground text-xs">NICKNAME</Label>
                 <Input
                   id="join-nickname"
                   value={nickname}
@@ -120,13 +126,13 @@ const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
                     setNickname(e.target.value);
                     setError('');
                   }}
-                  placeholder="Enter your name..."
-                  className="mt-1 bg-background border-border"
+                  placeholder="ENTER NAME..."
+                  className="mt-2 bg-background border-4 border-border uppercase"
                   maxLength={20}
                 />
               </div>
               <div>
-                <Label htmlFor="room-code" className="text-foreground">Room Code</Label>
+                <Label htmlFor="room-code" className="text-foreground text-xs">ROOM CODE</Label>
                 <Input
                   id="room-code"
                   value={roomCode}
@@ -135,24 +141,24 @@ const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
                     setError('');
                   }}
                   placeholder="ABCD12"
-                  className="mt-1 bg-background border-border uppercase tracking-widest text-center text-lg font-mono"
+                  className="mt-2 bg-background border-4 border-border uppercase tracking-widest text-center"
                   maxLength={6}
                 />
               </div>
-              {error && <p className="text-destructive text-sm">{error}</p>}
+              {error && <p className="text-destructive text-xs">{error}</p>}
               <div className="flex gap-3">
                 <Button 
                   variant="outline" 
-                  className="flex-1"
+                  className="flex-1 border-4 border-border"
                   onClick={() => setMode('home')}
                 >
-                  Back
+                  BACK
                 </Button>
                 <Button 
                   className="btn-purple flex-1"
                   onClick={handleJoin}
                 >
-                  Join Game
+                  JOIN
                 </Button>
               </div>
             </div>
