@@ -4,78 +4,86 @@
 
 @layer base {
   :root {
-    --background: 220 20% 10%;
-    --foreground: 45 100% 96%;
-    --card: 220 20% 14%;
-    --card-foreground: 45 100% 96%;
-    --popover: 220 20% 14%;
-    --popover-foreground: 45 100% 96%;
-    --primary: 45 100% 51%;
-    --primary-foreground: 220 20% 10%;
-    --secondary: 280 80% 60%;
-    --secondary-foreground: 45 100% 96%;
-    --muted: 220 15% 20%;
-    --muted-foreground: 220 10% 60%;
-    --accent: 160 80% 45%;
-    --accent-foreground: 220 20% 10%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 45 100% 96%;
-    --border: 220 15% 25%;
-    --input: 220 15% 25%;
-    --ring: 45 100% 51%;
-    --radius: 1rem;
-    --sidebar-background: 220 20% 12%;
-    --sidebar-foreground: 45 100% 96%;
-    --sidebar-primary: 45 100% 51%;
-    --sidebar-primary-foreground: 220 20% 10%;
-    --sidebar-accent: 220 15% 18%;
-    --sidebar-accent-foreground: 45 100% 96%;
-    --sidebar-border: 220 15% 25%;
-    --sidebar-ring: 45 100% 51%;
+    --background: 240 20% 8%;
+    --foreground: 60 100% 97%;
+    --card: 240 25% 12%;
+    --card-foreground: 60 100% 97%;
+    --popover: 240 25% 12%;
+    --popover-foreground: 60 100% 97%;
+    --primary: 45 100% 50%;
+    --primary-foreground: 240 20% 8%;
+    --secondary: 340 100% 60%;
+    --secondary-foreground: 60 100% 97%;
+    --muted: 240 20% 18%;
+    --muted-foreground: 240 10% 55%;
+    --accent: 160 100% 45%;
+    --accent-foreground: 240 20% 8%;
+    --destructive: 0 100% 55%;
+    --destructive-foreground: 60 100% 97%;
+    --border: 240 20% 25%;
+    --input: 240 20% 25%;
+    --ring: 45 100% 50%;
+    --radius: 0px;
+    --sidebar-background: 240 25% 10%;
+    --sidebar-foreground: 60 100% 97%;
+    --sidebar-primary: 45 100% 50%;
+    --sidebar-primary-foreground: 240 20% 8%;
+    --sidebar-accent: 240 20% 16%;
+    --sidebar-accent-foreground: 60 100% 97%;
+    --sidebar-border: 240 20% 25%;
+    --sidebar-ring: 45 100% 50%;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
+    image-rendering: pixelated;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    line-height: 1.8;
   }
 }
 
 @layer components {
   .btn-gold {
-    @apply bg-gradient-to-r from-primary to-yellow-500 text-primary-foreground font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 hover:scale-105;
+    @apply bg-primary text-primary-foreground font-bold py-3 px-6 border-4 border-b-8 border-r-8 border-primary/60 shadow-none transition-all duration-100 hover:translate-y-1 hover:border-b-4 hover:border-r-4 active:translate-y-2 active:border-b-2 active:border-r-2 uppercase tracking-wider;
   }
   
   .btn-purple {
-    @apply bg-gradient-to-r from-secondary to-purple-500 text-secondary-foreground font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 hover:scale-105;
+    @apply bg-secondary text-secondary-foreground font-bold py-3 px-6 border-4 border-b-8 border-r-8 border-secondary/60 shadow-none transition-all duration-100 hover:translate-y-1 hover:border-b-4 hover:border-r-4 active:translate-y-2 active:border-b-2 active:border-r-2 uppercase tracking-wider;
   }
   
   .game-cell {
-    @apply w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-lg border-2 border-border bg-card transition-all duration-200 cursor-pointer hover:border-primary hover:scale-105;
+    @apply w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 border-4 border-border bg-card transition-all duration-100 cursor-pointer hover:bg-muted hover:border-primary;
   }
   
   .game-cell-hit {
-    @apply bg-destructive/30 border-destructive;
+    @apply bg-destructive/40 border-destructive;
   }
   
   .game-cell-miss {
-    @apply bg-muted border-muted-foreground/30;
+    @apply bg-muted/50 border-muted-foreground/40;
   }
   
   .game-cell-money {
-    @apply bg-primary/20 border-primary;
+    @apply bg-primary/30 border-primary;
   }
   
   .card-glow {
-    @apply bg-card border border-border rounded-2xl p-6 shadow-lg;
+    @apply bg-card border-4 border-border p-6;
+    box-shadow: 8px 8px 0 hsl(var(--border));
   }
   
   .text-glow {
-    text-shadow: 0 0 20px hsl(45 100% 51% / 0.5);
+    text-shadow: 4px 4px 0 hsl(var(--primary) / 0.4);
+  }
+  
+  .pixel-border {
+    @apply border-4 border-b-8 border-r-8;
   }
 }
