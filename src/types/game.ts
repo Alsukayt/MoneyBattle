@@ -1,23 +1,34 @@
+export type WinMode = 'last_standing' | 'most_coins';
+
 export interface GameRoom {
   id: string;
   room_code: string;
   grid_size: number;
   coin_amount: number;
   host_nickname: string;
-  guest_nickname: string | null;
-  host_ready: boolean;
-  guest_ready: boolean;
-  current_turn: 'host' | 'guest' | null;
+  current_turn: string | null; // player id
   game_status: 'waiting' | 'placing' | 'playing' | 'finished';
-  winner: 'host' | 'guest' | null;
+  winner: string | null; // player id
+  win_mode: WinMode;
   created_at: string;
   updated_at: string;
+}
+
+export interface GamePlayer {
+  id: string;
+  room_id: string;
+  nickname: string;
+  seat: number;
+  is_host: boolean;
+  ready: boolean;
+  eliminated: boolean;
+  coins_collected: number;
 }
 
 export interface GameCell {
   id: string;
   room_id: string;
-  player: 'host' | 'guest';
+  player: string; // player id
   cell_x: number;
   cell_y: number;
   coins: number;
@@ -25,7 +36,16 @@ export interface GameCell {
   created_at: string;
 }
 
-export type PlayerRole = 'host' | 'guest';
+export interface GameAttack {
+  id: string;
+  room_id: string;
+  attacker_id: string;
+  target_id: string;
+  cell_x: number;
+  cell_y: number;
+  hit: boolean;
+  coins: number;
+}
 
 export interface PlacementCell {
   x: number;
