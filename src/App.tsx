@@ -5,11 +5,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import { I18nProvider, LanguageToggle } from "./i18n";
 
 const queryClient = new QueryClient();
 
 const App = () => (
+  <I18nProvider>
   <QueryClientProvider client={queryClient}>
+  <LanguageToggle />
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -22,6 +25,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
+  </I18nProvider>
 );
 
 export default App;

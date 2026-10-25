@@ -1,6 +1,9 @@
 import { Coins } from 'lucide-react';
+import { useI18n } from '@/i18n';
+
 
 const Logo = () => {
+  const { t } = useI18n();
   return (
     <div className="flex flex-col items-center gap-2 select-none">
       <div className="relative">
@@ -12,9 +15,9 @@ const Logo = () => {
       <div className="text-center mt-2">
         <h1 className="text-2xl sm:text-3xl tracking-tight leading-relaxed">
           <span className="text-primary text-glow block">DAPTS</span>
-          <span className="text-foreground text-lg sm:text-xl block mt-1">MONEY BATTLE</span>
+          <span className="text-foreground text-lg sm:text-xl block mt-1">{t('brandSub')}</span>
         </h1>
-        <p className="text-muted-foreground text-xs mt-2">HUNT THE COINS!</p>
+        <p className="text-muted-foreground text-xs mt-2">{t('tagline')}</p>
       </div>
     </div>
   );
