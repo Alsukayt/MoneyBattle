@@ -4,16 +4,18 @@ import Logo from './Logo';
 import { Trophy, Frown, RotateCcw, Home } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useEffect } from 'react';
+import { GamePlayer, WinMode } from '@/types/game';
 
 interface GameOverProps {
   isWinner: boolean;
   winnerName: string;
-  loserName: string;
+  winMode: WinMode;
+  players: GamePlayer[];
   onPlayAgain: () => void;
   onGoHome: () => void;
 }
 
-const GameOver = ({ isWinner, winnerName, loserName, onPlayAgain, onGoHome }: GameOverProps) => {
+const GameOver = ({ isWinner, winnerName, winMode, players, onPlayAgain, onGoHome }: GameOverProps) => {
   useEffect(() => {
     if (isWinner) {
       // Celebration confetti
@@ -61,7 +63,7 @@ const GameOver = ({ isWinner, winnerName, loserName, onPlayAgain, onGoHome }: Ga
               <div>
                 <h2 className="text-3xl font-black text-primary text-glow">VICTORY!</h2>
                 <p className="text-xl text-foreground mt-2">{winnerName} wins!</p>
-                <p className="text-muted-foreground mt-1">You found all of {loserName}'s coins!</p>
+                <p className="text-muted-foreground mt-1">{winMode === 'most_coins' ? 'You collected the most coins!' : 'You are the last one standing!'}</p>
               </div>
             </>
           ) : (
@@ -72,10 +74,19 @@ const GameOver = ({ isWinner, winnerName, loserName, onPlayAgain, onGoHome }: Ga
               <div>
                 <h2 className="text-3xl font-black text-muted-foreground">DEFEAT</h2>
                 <p className="text-xl text-foreground mt-2">{winnerName} wins!</p>
-                <p className="text-muted-foreground mt-1">They found all your coins first!</p>
+                <p className="text-muted-foreground mt-1">Better luck next time!</p>
               </div>
             </>
           )}
+
+          <div className="space-y-2 text-left">
+            {[...players].sort((a, b) => b.coins_collected - a.coins_collected).map(p => (
+              <div key={p.id} className="flex justify-between p-2 rounded bg-background/50 text-sm">
+                <span>{p.nickname}{p.eliminated && ' (out)'}</span>
+                <span className="text-primary">{p.coins_collected} coins</span>
+              </div>
+            ))}
+          </div>
 
           <div className="flex gap-3 pt-4">
             <Button 
