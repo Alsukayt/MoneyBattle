@@ -68,7 +68,7 @@
   }
   
   .btn-purple {
-    @apply bg-secondary text-secondary-foreground font-bold py-3 px-6 border-4 border-b-8 border-r-8 border-secondary/60 shadow-none transition-all duration-100 hover:translate-y-1 hover:border-b-4 hover:border-r-4 active:translate-y-2 active:border-b-2 active:border-r-2 uppercase tracking-wider;
+    @apply !bg-secondary !text-secondary-foreground font-bold py-3 px-6 border-4 border-b-8 border-r-8 border-secondary/60 shadow-none transition-all duration-100 hover:translate-y-1 hover:border-b-4 hover:border-r-4 active:translate-y-2 active:border-b-2 active:border-r-2 uppercase tracking-wider;
   }
   
   .game-cell {
