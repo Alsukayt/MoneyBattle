@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 import { GameRoom, GameCell, GamePlayer, GameAttack } from '@/types/game';
 
 const nextAliveAfter = (players: GamePlayer[], currentId: string | null) => {
@@ -65,7 +66,7 @@ export const useGameRoom = (roomCode: string | null, playerId: string | null) =>
     return () => { supabase.removeChannel(channel); };
   }, [room?.id, fetchPlayers, fetchCells, fetchAttacks]);
 
-  const updateRoom = async (updates: Record<string, unknown>) => {
+  const updateRoom = async (updates: Database['public']['Tables']['game_rooms']['Update']) => {
     if (!room?.id) return;
     const { error } = await supabase.from('game_rooms').update(updates).eq('id', room.id);
     if (error) console.error('Error updating room:', error);
