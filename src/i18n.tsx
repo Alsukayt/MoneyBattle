@@ -167,7 +167,8 @@ export const translate = (lang: Lang, key: TKey, vars?: Record<string, string | 
 };
 
 type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (k: TKey, v?: Record<string, string | number>) => string };
-const I18nContext = createContext<Ctx | null>(null);
+const fallbackLang = (): Lang => ((typeof localStorage !== 'undefined' && (localStorage.getItem('lang') as Lang)) || 'ar');
+const I18nContext = createContext<Ctx>({ lang: fallbackLang(), setLang: () => {}, t: (k, v) => translate(fallbackLang(), k, v) });
 
 export const I18nProvider = ({ children }: { children: ReactNode }) => {
   const [lang, setLang] = useState<Lang>(() => (localStorage.getItem('lang') as Lang) || 'ar');
@@ -184,9 +185,7 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useI18n = () => {
-  const c = useContext(I18nContext);
-  if (!c) throw new Error('useI18n outside provider');
-  return c;
+  return useContext(I18nContext);
 };
 
 export const LanguageToggle = () => {
