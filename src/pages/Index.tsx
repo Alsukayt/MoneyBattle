@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useGameRoom } from '@/hooks/useGameRoom';
-import { PlayerRole, PlacementCell } from '@/types/game';
+import { PlacementCell, WinMode } from '@/types/game';
 import HomeScreen from '@/components/game/HomeScreen';
 import GameSetup from '@/components/game/GameSetup';
 import PlacementPhase from '@/components/game/PlacementPhase';
@@ -12,250 +12,150 @@ import { toast } from 'sonner';
 const generateRoomCode = () => {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let code = '';
-  for (let i = 0; i < 6; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
+  for (let i = 0; i < 6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
   return code;
 };
 
 const Index = () => {
-  const [gameState, setGameState] = useState<'home' | 'setup' | 'placing' | 'playing' | 'finished'>('home');
   const [roomCode, setRoomCode] = useState<string | null>(null);
-  const [playerRole, setPlayerRole] = useState<PlayerRole | null>(null);
+  const [playerId, setPlayerId] = useState<string | null>(null);
   const [nickname, setNickname] = useState('');
-  const [myAttacks, setMyAttacks] = useState<{ x: number; y: number; hit: boolean; coins: number }[]>([]);
 
-  const { room, myCells, opponentCells, updateRoom, placeMoney, attackCell } = useGameRoom(roomCode, playerRole);
+  const { room, players, myCells, attacks, updateRoom, placeMoney, setReady, endTurn, attackCell } =
+    useGameRoom(roomCode, playerId);
 
-  // Sync game state with room status
-  useEffect(() => {
-    if (!room) return;
-
-    if (room.game_status === 'waiting' && gameState !== 'setup') {
-      setGameState('setup');
-    } else if (room.game_status === 'placing' && gameState !== 'placing') {
-      setGameState('placing');
-    } else if (room.game_status === 'playing' && gameState !== 'playing') {
-      setGameState('playing');
-    } else if (room.game_status === 'finished' && gameState !== 'finished') {
-      setGameState('finished');
-    }
-  }, [room?.game_status]);
-
-  // Track opponent attacks on my cells
-  useEffect(() => {
-    if (!room || room.game_status !== 'playing') return;
-    
-    const hitCells = myCells.filter(c => c.is_hit);
-    if (hitCells.length > 0) {
-      const lastHit = hitCells[hitCells.length - 1];
-      // Show notification when opponent hits our coins
-    }
-  }, [myCells, room?.game_status]);
+  const me = players.find(p => p.id === playerId);
 
   const handleCreateGame = async (playerNickname: string) => {
     const code = generateRoomCode();
     setNickname(playerNickname);
-
-    const { error } = await supabase
+    const { data: newRoom, error } = await supabase
       .from('game_rooms')
-      .insert({
-        room_code: code,
-        host_nickname: playerNickname,
-        game_status: 'waiting'
-      });
-
-    if (error) {
-      toast.error('Failed to create game. Try again!');
-      console.error(error);
-      return;
-    }
-
+      .insert({ room_code: code, host_nickname: playerNickname, game_status: 'waiting' })
+      .select().single();
+    if (error || !newRoom) { toast.error('Failed to create game. Try again!'); return; }
+    const { data: p, error: pErr } = await supabase
+      .from('game_players')
+      .insert({ room_id: newRoom.id, nickname: playerNickname, seat: 0, is_host: true })
+      .select().single();
+    if (pErr || !p) { toast.error('Failed to create game. Try again!'); return; }
+    setPlayerId(p.id);
     setRoomCode(code);
-    setPlayerRole('host');
-    setGameState('setup');
   };
 
   const handleJoinGame = async (playerNickname: string, code: string) => {
     setNickname(playerNickname);
-
-    // Check if room exists
-    const { data: existingRoom, error: fetchError } = await supabase
-      .from('game_rooms')
-      .select('*')
-      .eq('room_code', code)
-      .single();
-
-    if (fetchError || !existingRoom) {
-      toast.error('Room not found! Check the code and try again.');
-      return;
-    }
-
-    if (existingRoom.guest_nickname) {
-      toast.error('Room is full!');
-      return;
-    }
-
-    // Join the room
-    const { error: updateError } = await supabase
-      .from('game_rooms')
-      .update({ guest_nickname: playerNickname })
-      .eq('room_code', code);
-
-    if (updateError) {
-      toast.error('Failed to join game. Try again!');
-      return;
-    }
-
+    const { data: existingRoom } = await supabase.from('game_rooms').select('*').eq('room_code', code).single();
+    if (!existingRoom) { toast.error('Room not found! Check the code and try again.'); return; }
+    if (existingRoom.game_status !== 'waiting') { toast.error('This game already started!'); return; }
+    const { data: list } = await supabase.from('game_players').select('seat').eq('room_id', existingRoom.id);
+    const seat = (list || []).reduce((m, r) => Math.max(m, r.seat), -1) + 1;
+    const { data: p, error } = await supabase
+      .from('game_players')
+      .insert({ room_id: existingRoom.id, nickname: playerNickname, seat })
+      .select().single();
+    if (error || !p) { toast.error('Failed to join game. Try again!'); return; }
+    setPlayerId(p.id);
     setRoomCode(code);
-    setPlayerRole('guest');
-    setGameState('setup');
   };
 
-  const handleStartGame = async (gridSize: number, coinAmount: number) => {
-    await updateRoom({
-      grid_size: gridSize,
-      coin_amount: coinAmount,
-      game_status: 'placing'
-    });
+  const handleStartGame = async (gridSize: number, coinAmount: number, winMode: WinMode) => {
+    await updateRoom({ grid_size: gridSize, coin_amount: coinAmount, win_mode: winMode, game_status: 'placing' });
   };
 
-  const handlePlaceMoney = async (cells: PlacementCell[]) => {
-    await placeMoney(cells);
+  const handleAttack = async (targetId: string, x: number, y: number) => {
+    const result = await attackCell(targetId, x, y);
+    if (!result) return;
+    if (result.hit) toast.success(`Hit! Found ${result.coins} coins!`);
+    else toast('Miss! No coins there.');
   };
 
-  const handleReady = async () => {
-    if (!playerRole || !room) return;
-
-    const updates: Record<string, boolean | string> = {};
-    
-    if (playerRole === 'host') {
-      updates.host_ready = true;
-    } else {
-      updates.guest_ready = true;
-    }
-
-    // Check if both players will be ready
-    const bothReady = playerRole === 'host' 
-      ? room.guest_ready 
-      : room.host_ready;
-
-    if (bothReady) {
-      updates.game_status = 'playing';
-      updates.current_turn = 'host'; // Host goes first
-    }
-
-    await updateRoom(updates);
-  };
-
-  const handleAttack = async (x: number, y: number) => {
-    const result = await attackCell(x, y);
-    
-    const hit = result !== null && result.coins > 0;
-    const coins = result?.coins || 0;
-
-    setMyAttacks(prev => [...prev, { x, y, hit, coins }]);
-
-    if (hit) {
-      toast.success(`Hit! Found ${coins} coins!`);
-    } else {
-      toast('Miss! No coins there.');
-    }
+  const handleEndTurn = async () => {
+    await endTurn();
+    toast('Turn ended.');
   };
 
   const handlePlayAgain = () => {
-    setGameState('home');
     setRoomCode(null);
-    setPlayerRole(null);
+    setPlayerId(null);
     setNickname('');
-    setMyAttacks([]);
   };
 
-  if (gameState === 'home') {
+  // Notify when eliminated
+  useEffect(() => {
+    if (me?.eliminated && room?.game_status === 'playing') toast.error('All your coins were found! You are out.');
+  }, [me?.eliminated]);
+
+  if (!roomCode) {
+    return <HomeScreen onCreateGame={handleCreateGame} onJoinGame={handleJoinGame} />;
+  }
+
+  if (!room || !me) {
     return (
-      <HomeScreen 
-        onCreateGame={handleCreateGame}
-        onJoinGame={handleJoinGame}
-      />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-pulse text-primary text-xl">Loading...</div>
+      </div>
     );
   }
 
-  if (gameState === 'setup' && room) {
+  const others = players.filter(p => p.id !== playerId);
+
+  if (room.game_status === 'waiting') {
     return (
       <GameSetup
         roomCode={room.room_code}
-        isHost={playerRole === 'host'}
-        hostNickname={room.host_nickname}
-        guestNickname={room.guest_nickname}
+        isHost={me.is_host}
+        players={players}
         onStartGame={handleStartGame}
       />
     );
   }
 
-  if (gameState === 'placing' && room) {
-    const isReady = playerRole === 'host' ? room.host_ready : room.guest_ready;
-    const isOpponentReady = playerRole === 'host' ? room.guest_ready : room.host_ready;
-    const opponentNickname = playerRole === 'host' ? room.guest_nickname : room.host_nickname;
-
+  if (room.game_status === 'placing') {
+    const othersReady = others.length > 0 && others.every(p => p.ready);
     return (
       <PlacementPhase
         gridSize={room.grid_size}
         totalCoins={room.coin_amount}
         nickname={nickname}
-        opponentNickname={opponentNickname || 'Opponent'}
-        isOpponentReady={isOpponentReady}
-        onPlaceMoney={handlePlaceMoney}
-        onReady={handleReady}
-        isReady={isReady}
+        opponentNickname={others.length === 1 ? others[0].nickname : 'other players'}
+        isOpponentReady={othersReady}
+        onPlaceMoney={(cells: PlacementCell[]) => placeMoney(cells)}
+        onReady={setReady}
+        isReady={me.ready}
       />
     );
   }
 
-  if (gameState === 'playing' && room) {
-    const opponentNickname = playerRole === 'host' ? room.guest_nickname : room.host_nickname;
-    const isMyTurn = room.current_turn === playerRole;
-
+  if (room.game_status === 'playing') {
+    const current = players.find(p => p.id === room.current_turn);
     return (
       <BattlePhase
         gridSize={room.grid_size}
         totalCoins={room.coin_amount}
-        nickname={nickname}
-        opponentNickname={opponentNickname || 'Opponent'}
-        isMyTurn={isMyTurn}
+        winMode={room.win_mode}
+        me={me}
+        players={players}
+        currentTurnName={current?.nickname || '...'}
+        isMyTurn={room.current_turn === playerId && !me.eliminated}
         myCells={myCells}
-        opponentCells={opponentCells}
-        myAttacks={myAttacks}
+        attacks={attacks}
         onAttack={handleAttack}
-        onEndTurn={async () => {
-          await updateRoom({ current_turn: playerRole === 'host' ? 'guest' : 'host' });
-          toast('Turn ended.');
-        }}
+        onEndTurn={handleEndTurn}
       />
     );
   }
 
-  if (gameState === 'finished' && room) {
-    const isWinner = room.winner === playerRole;
-    const winnerName = room.winner === 'host' ? room.host_nickname : room.guest_nickname;
-    const loserName = room.winner === 'host' ? room.guest_nickname : room.host_nickname;
-
-    return (
-      <GameOver
-        isWinner={isWinner}
-        winnerName={winnerName || 'Winner'}
-        loserName={loserName || 'Loser'}
-        onPlayAgain={handlePlayAgain}
-        onGoHome={handlePlayAgain}
-      />
-    );
-  }
-
+  const winner = players.find(p => p.id === room.winner);
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <div className="animate-pulse text-primary text-xl">Loading...</div>
-      </div>
-    </div>
+    <GameOver
+      isWinner={room.winner === playerId}
+      winnerName={winner?.nickname || 'Winner'}
+      winMode={room.win_mode}
+      players={players}
+      onPlayAgain={handlePlayAgain}
+      onGoHome={handlePlayAgain}
+    />
   );
 };
 

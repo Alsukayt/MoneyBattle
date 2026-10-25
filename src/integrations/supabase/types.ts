@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      game_attacks: {
+        Row: {
+          attacker_id: string
+          cell_x: number
+          cell_y: number
+          coins: number
+          created_at: string
+          hit: boolean
+          id: string
+          room_id: string
+          target_id: string
+        }
+        Insert: {
+          attacker_id: string
+          cell_x: number
+          cell_y: number
+          coins?: number
+          created_at?: string
+          hit?: boolean
+          id?: string
+          room_id: string
+          target_id: string
+        }
+        Update: {
+          attacker_id?: string
+          cell_x?: number
+          cell_y?: number
+          coins?: number
+          created_at?: string
+          hit?: boolean
+          id?: string
+          room_id?: string
+          target_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_attacks_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "game_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       game_cells: {
         Row: {
           cell_x: number
@@ -55,6 +99,50 @@ export type Database = {
           },
         ]
       }
+      game_players: {
+        Row: {
+          coins_collected: number
+          created_at: string
+          eliminated: boolean
+          id: string
+          is_host: boolean
+          nickname: string
+          ready: boolean
+          room_id: string
+          seat: number
+        }
+        Insert: {
+          coins_collected?: number
+          created_at?: string
+          eliminated?: boolean
+          id?: string
+          is_host?: boolean
+          nickname: string
+          ready?: boolean
+          room_id: string
+          seat: number
+        }
+        Update: {
+          coins_collected?: number
+          created_at?: string
+          eliminated?: boolean
+          id?: string
+          is_host?: boolean
+          nickname?: string
+          ready?: boolean
+          room_id?: string
+          seat?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_players_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "game_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       game_rooms: {
         Row: {
           coin_amount: number
@@ -69,6 +157,7 @@ export type Database = {
           id: string
           room_code: string
           updated_at: string
+          win_mode: string
           winner: string | null
         }
         Insert: {
@@ -84,6 +173,7 @@ export type Database = {
           id?: string
           room_code: string
           updated_at?: string
+          win_mode?: string
           winner?: string | null
         }
         Update: {
@@ -99,6 +189,7 @@ export type Database = {
           id?: string
           room_code?: string
           updated_at?: string
+          win_mode?: string
           winner?: string | null
         }
         Relationships: []
