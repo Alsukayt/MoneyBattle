@@ -8,6 +8,8 @@ import PlacementPhase from '@/components/game/PlacementPhase';
 import BattlePhase from '@/components/game/BattlePhase';
 import GameOver from '@/components/game/GameOver';
 import { toast } from 'sonner';
+import { useI18n } from '@/i18n';
+
 
 const generateRoomCode = () => {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -17,6 +19,7 @@ const generateRoomCode = () => {
 };
 
 const Index = () => {
+  const { t } = useI18n();
   const [roomCode, setRoomCode] = useState<string | null>(null);
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [nickname, setNickname] = useState('');
@@ -33,12 +36,12 @@ const Index = () => {
       .from('game_rooms')
       .insert({ room_code: code, host_nickname: playerNickname, game_status: 'waiting' })
       .select().single();
-    if (error || !newRoom) { toast.error('Failed to create game. Try again!'); return; }
+    if (error || !newRoom) { toast.error(t('tCreateFail')); return; }
     const { data: p, error: pErr } = await supabase
       .from('game_players')
       .insert({ room_id: newRoom.id, nickname: playerNickname, seat: 0, is_host: true })
       .select().single();
-    if (pErr || !p) { toast.error('Failed to create game. Try again!'); return; }
+    if (pErr || !p) { toast.error(t('tCreateFail')); return; }
     setPlayerId(p.id);
     setRoomCode(code);
   };
@@ -46,15 +49,15 @@ const Index = () => {
   const handleJoinGame = async (playerNickname: string, code: string) => {
     setNickname(playerNickname);
     const { data: existingRoom } = await supabase.from('game_rooms').select('*').eq('room_code', code).single();
-    if (!existingRoom) { toast.error('Room not found! Check the code and try again.'); return; }
-    if (existingRoom.game_status !== 'waiting') { toast.error('This game already started!'); return; }
+    if (!existingRoom) { toast.error(t('tNotFound')); return; }
+    if (existingRoom.game_status !== 'waiting') { toast.error(t('tStarted')); return; }
     const { data: list } = await supabase.from('game_players').select('seat').eq('room_id', existingRoom.id);
     const seat = (list || []).reduce((m, r) => Math.max(m, r.seat), -1) + 1;
     const { data: p, error } = await supabase
       .from('game_players')
       .insert({ room_id: existingRoom.id, nickname: playerNickname, seat })
       .select().single();
-    if (error || !p) { toast.error('Failed to join game. Try again!'); return; }
+    if (error || !p) { toast.error(t('tJoinFail')); return; }
     setPlayerId(p.id);
     setRoomCode(code);
   };
@@ -66,13 +69,13 @@ const Index = () => {
   const handleAttack = async (targetId: string, x: number, y: number) => {
     const result = await attackCell(targetId, x, y);
     if (!result) return;
-    if (result.hit) toast.success(`Hit! Found ${result.coins} coins!`);
-    else toast('Miss! No coins there.');
+    if (result.hit) toast.success(t('tHit', { n: result.coins }));
+    else toast(t('tMiss'));
   };
 
   const handleEndTurn = async () => {
     await endTurn();
-    toast('Turn ended.');
+    toast(t('tTurnEnded'));
   };
 
   const handlePlayAgain = () => {
@@ -83,7 +86,7 @@ const Index = () => {
 
   // Notify when eliminated
   useEffect(() => {
-    if (me?.eliminated && room?.game_status === 'playing') toast.error('All your coins were found! You are out.');
+    if (me?.eliminated && room?.game_status === 'playing') toast.error(t('tEliminated'));
   }, [me?.eliminated]);
 
   if (!roomCode) {
@@ -93,7 +96,7 @@ const Index = () => {
   if (!room || !me) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-pulse text-primary text-xl">Loading...</div>
+        <div className="animate-pulse text-primary text-xl">{t('loading')}</div>
       </div>
     );
   }
@@ -118,7 +121,7 @@ const Index = () => {
         gridSize={room.grid_size}
         totalCoins={room.coin_amount}
         nickname={nickname}
-        opponentNickname={others.length === 1 ? others[0].nickname : 'other players'}
+        opponentNickname={others.length === 1 ? others[0].nickname : t('otherPlayers')}
         isOpponentReady={othersReady}
         onPlaceMoney={(cells: PlacementCell[]) => placeMoney(cells)}
         onReady={setReady}

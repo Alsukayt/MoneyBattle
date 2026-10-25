@@ -5,6 +5,8 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import Logo from './Logo';
 import { Plus, Users } from 'lucide-react';
+import { useI18n } from '@/i18n';
+
 
 interface HomeScreenProps {
   onCreateGame: (nickname: string) => void;
@@ -12,6 +14,7 @@ interface HomeScreenProps {
 }
 
 const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
+  const { t } = useI18n();
   const [mode, setMode] = useState<'home' | 'create' | 'join'>('home');
   const [nickname, setNickname] = useState('');
   const [roomCode, setRoomCode] = useState('');
@@ -19,7 +22,7 @@ const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
 
   const handleCreate = () => {
     if (!nickname.trim()) {
-      setError('Please enter your nickname');
+      setError(t('errNickname'));
       return;
     }
     onCreateGame(nickname.trim());
@@ -27,11 +30,11 @@ const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
 
   const handleJoin = () => {
     if (!nickname.trim()) {
-      setError('Please enter your nickname');
+      setError(t('errNickname'));
       return;
     }
     if (!roomCode.trim()) {
-      setError('Please enter the room code');
+      setError(t('errCode'));
       return;
     }
     onJoinGame(nickname.trim(), roomCode.trim().toUpperCase());
@@ -52,24 +55,24 @@ const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
 
         {mode === 'home' && (
           <Card className="card-glow space-y-4">
-            <h2 className="text-base text-center text-foreground">WELCOME PLAYER!</h2>
+            <h2 className="text-base text-center text-foreground">{t('welcome')}</h2>
             <p className="text-muted-foreground text-center text-xs leading-relaxed">
-              Hide your coins, hunt your opponent's treasure!
+              {t('intro')}
             </p>
             <div className="space-y-4 pt-4">
               <Button 
                 className="btn-gold w-full"
                 onClick={() => setMode('create')}
               >
-                <Plus className="w-4 h-4 mr-2" />
-                CREATE GAME
+                <Plus className="w-4 h-4 me-2" />
+                {t('createGame')}
               </Button>
               <Button 
                 className="btn-purple w-full"
                 onClick={() => setMode('join')}
               >
-                <Users className="w-4 h-4 mr-2" />
-                JOIN GAME
+                <Users className="w-4 h-4 me-2" />
+                {t('joinGame')}
               </Button>
             </div>
           </Card>
@@ -77,10 +80,10 @@ const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
 
         {mode === 'create' && (
           <Card className="card-glow space-y-4">
-            <h2 className="text-base text-foreground">CREATE GAME</h2>
+            <h2 className="text-base text-foreground">{t('createGame')}</h2>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="nickname" className="text-foreground text-xs">NICKNAME</Label>
+                <Label htmlFor="nickname" className="text-foreground text-xs">{t('nickname')}</Label>
                 <Input
                   id="nickname"
                   value={nickname}
@@ -88,7 +91,7 @@ const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
                     setNickname(e.target.value);
                     setError('');
                   }}
-                  placeholder="ENTER NAME..."
+                  placeholder={t('enterName')}
                   className="mt-2 bg-background border-4 border-border uppercase"
                   maxLength={20}
                 />
@@ -100,13 +103,13 @@ const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
                   className="flex-1 border-4 border-border"
                   onClick={() => setMode('home')}
                 >
-                  BACK
+                  {t('back')}
                 </Button>
                 <Button 
                   className="btn-gold flex-1"
                   onClick={handleCreate}
                 >
-                  CREATE
+                  {t('create')}
                 </Button>
               </div>
             </div>
@@ -115,10 +118,10 @@ const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
 
         {mode === 'join' && (
           <Card className="card-glow space-y-4">
-            <h2 className="text-base text-foreground">JOIN GAME</h2>
+            <h2 className="text-base text-foreground">{t('joinGame')}</h2>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="join-nickname" className="text-foreground text-xs">NICKNAME</Label>
+                <Label htmlFor="join-nickname" className="text-foreground text-xs">{t('nickname')}</Label>
                 <Input
                   id="join-nickname"
                   value={nickname}
@@ -126,13 +129,13 @@ const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
                     setNickname(e.target.value);
                     setError('');
                   }}
-                  placeholder="ENTER NAME..."
+                  placeholder={t('enterName')}
                   className="mt-2 bg-background border-4 border-border uppercase"
                   maxLength={20}
                 />
               </div>
               <div>
-                <Label htmlFor="room-code" className="text-foreground text-xs">ROOM CODE</Label>
+                <Label htmlFor="room-code" className="text-foreground text-xs">{t('roomCode')}</Label>
                 <Input
                   id="room-code"
                   value={roomCode}
@@ -141,7 +144,7 @@ const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
                     setError('');
                   }}
                   placeholder="ABCD12"
-                  className="mt-2 bg-background border-4 border-border uppercase tracking-widest text-center"
+                  className="mt-2 bg-background border-4 border-border uppercase tracking-widest text-center" dir="ltr"
                   maxLength={6}
                 />
               </div>
@@ -152,13 +155,13 @@ const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
                   className="flex-1 border-4 border-border"
                   onClick={() => setMode('home')}
                 >
-                  BACK
+                  {t('back')}
                 </Button>
                 <Button 
                   className="btn-purple flex-1"
                   onClick={handleJoin}
                 >
-                  JOIN
+                  {t('join')}
                 </Button>
               </div>
             </div>

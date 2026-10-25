@@ -5,6 +5,8 @@ import Logo from './Logo';
 import GameGrid from './GameGrid';
 import { GameCell, GamePlayer, GameAttack, WinMode } from '@/types/game';
 import { Coins, Target, Shield, SkipForward, Skull } from 'lucide-react';
+import { useI18n } from '@/i18n';
+
 
 interface BattlePhaseProps {
   gridSize: number;
@@ -23,6 +25,7 @@ interface BattlePhaseProps {
 const BattlePhase = ({
   gridSize, totalCoins, winMode, me, players, currentTurnName, isMyTurn, myCells, attacks, onAttack, onEndTurn,
 }: BattlePhaseProps) => {
+  const { t } = useI18n();
   const opponents = players.filter(p => p.id !== me.id);
   const aliveOpponents = opponents.filter(p => !p.eliminated);
   const [targetId, setTargetId] = useState<string | null>(aliveOpponents[0]?.id ?? null);
@@ -54,37 +57,37 @@ const BattlePhase = ({
         <Card className={`card-glow text-center ${isMyTurn ? 'border-primary' : 'border-muted'}`}>
           <div className="flex items-center justify-center gap-2 flex-wrap">
             {me.eliminated ? (
-              <><Skull className="w-6 h-6 text-destructive" /><span className="text-xl font-bold text-destructive">You're out — watching {currentTurnName}'s turn</span></>
+              <><Skull className="w-6 h-6 text-destructive" /><span className="text-xl font-bold text-destructive">{t('youOut', { name: currentTurnName })}</span></>
             ) : isMyTurn ? (
               <>
                 <Target className="w-6 h-6 text-primary animate-pulse" />
-                <span className="text-xl font-bold text-primary">Your Turn - Pick a target!</span>
+                <span className="text-xl font-bold text-primary">{t('yourTurn')}</span>
                 <Button variant="outline" size="sm" onClick={onEndTurn} className="ml-4">
-                  <SkipForward className="w-4 h-4 mr-1" /> End Turn
+                  <SkipForward className="w-4 h-4 me-1" /> {t('endTurn')}
                 </Button>
               </>
             ) : (
-              <><Shield className="w-6 h-6 text-muted-foreground" /><span className="text-xl font-bold text-muted-foreground">{currentTurnName}'s Turn...</span></>
+              <><Shield className="w-6 h-6 text-muted-foreground" /><span className="text-xl font-bold text-muted-foreground">{t('theirTurn', { name: currentTurnName })}</span></>
             )}
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            {winMode === 'most_coins' ? 'Most coins collected wins' : 'Last one standing wins'}
+            {winMode === 'most_coins' ? t('winMostCoins') : t('winLastStanding')}
           </p>
         </Card>
 
         {/* Players / target picker */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Card className="card-glow text-center">
-            <p className="text-sm text-muted-foreground">You</p>
-            <p className="text-xl font-bold text-accent"><Coins className="w-4 h-4 inline mr-1" />{myRemainingCoins}</p>
-            <p className="text-xs text-muted-foreground">Collected {me.coins_collected}</p>
+            <p className="text-sm text-muted-foreground">{t('you')}</p>
+            <p className="text-xl font-bold text-accent"><Coins className="w-4 h-4 inline me-1" />{myRemainingCoins}</p>
+            <p className="text-xs text-muted-foreground">{t('collected', { n: me.coins_collected })}</p>
           </Card>
           {opponents.map(p => (
-            <button key={p.id} disabled={p.eliminated} onClick={() => setTargetId(p.id)} className="text-left">
+            <button key={p.id} disabled={p.eliminated} onClick={() => setTargetId(p.id)} className="text-start">
               <Card className={`card-glow text-center transition-all ${p.id === targetId ? 'border-primary bg-primary/10' : ''} ${p.eliminated ? 'opacity-40' : 'hover:border-muted-foreground'}`}>
-                <p className="text-sm text-muted-foreground truncate">{p.nickname}{p.eliminated && ' (out)'}</p>
-                <p className="text-xl font-bold text-destructive"><Coins className="w-4 h-4 inline mr-1" />{remainingFor(p.id)}</p>
-                <p className="text-xs text-muted-foreground">Collected {p.coins_collected}</p>
+                <p className="text-sm text-muted-foreground truncate">{p.nickname}{p.eliminated && t('out')}</p>
+                <p className="text-xl font-bold text-destructive"><Coins className="w-4 h-4 inline me-1" />{remainingFor(p.id)}</p>
+                <p className="text-xs text-muted-foreground">{t('collected', { n: p.coins_collected })}</p>
               </Card>
             </button>
           ))}
@@ -94,7 +97,7 @@ const BattlePhase = ({
           <div className="space-y-2">
             <h3 className="text-lg font-bold text-center flex items-center justify-center gap-2">
               <Target className="w-5 h-5 text-destructive" />
-              {target ? `${target.nickname}'s Grid` : 'No target'}
+              {target ? t('gridOf', { name: target.nickname }) : t('noTarget')}
             </h3>
             <div className="flex justify-center">
               <GameGrid
@@ -110,7 +113,7 @@ const BattlePhase = ({
           </div>
           <div className="space-y-2">
             <h3 className="text-lg font-bold text-center flex items-center justify-center gap-2">
-              <Shield className="w-5 h-5 text-accent" /> Your Grid
+              <Shield className="w-5 h-5 text-accent" /> {t('yourGrid')}
             </h3>
             <div className="flex justify-center">
               <GameGrid

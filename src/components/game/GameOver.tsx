@@ -5,6 +5,8 @@ import { Trophy, Frown, RotateCcw, Home } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useEffect } from 'react';
 import { GamePlayer, WinMode } from '@/types/game';
+import { useI18n } from '@/i18n';
+
 
 interface GameOverProps {
   isWinner: boolean;
@@ -16,6 +18,7 @@ interface GameOverProps {
 }
 
 const GameOver = ({ isWinner, winnerName, winMode, players, onPlayAgain, onGoHome }: GameOverProps) => {
+  const { t } = useI18n();
   useEffect(() => {
     if (isWinner) {
       // Celebration confetti
@@ -61,9 +64,9 @@ const GameOver = ({ isWinner, winnerName, winMode, players, onPlayAgain, onGoHom
                 <Trophy className="w-12 h-12 text-primary-foreground" />
               </div>
               <div>
-                <h2 className="text-3xl font-black text-primary text-glow">VICTORY!</h2>
-                <p className="text-xl text-foreground mt-2">{winnerName} wins!</p>
-                <p className="text-muted-foreground mt-1">{winMode === 'most_coins' ? 'You collected the most coins!' : 'You are the last one standing!'}</p>
+                <h2 className="text-3xl font-black text-primary text-glow">{t('victory')}</h2>
+                <p className="text-xl text-foreground mt-2">{t('wins', { name: winnerName })}</p>
+                <p className="text-muted-foreground mt-1">{winMode === 'most_coins' ? t('youMost') : t('youLast')}</p>
               </div>
             </>
           ) : (
@@ -72,18 +75,18 @@ const GameOver = ({ isWinner, winnerName, winMode, players, onPlayAgain, onGoHom
                 <Frown className="w-12 h-12 text-foreground" />
               </div>
               <div>
-                <h2 className="text-3xl font-black text-muted-foreground">DEFEAT</h2>
-                <p className="text-xl text-foreground mt-2">{winnerName} wins!</p>
-                <p className="text-muted-foreground mt-1">Better luck next time!</p>
+                <h2 className="text-3xl font-black text-muted-foreground">{t('defeat')}</h2>
+                <p className="text-xl text-foreground mt-2">{t('wins', { name: winnerName })}</p>
+                <p className="text-muted-foreground mt-1">{t('betterLuck')}</p>
               </div>
             </>
           )}
 
-          <div className="space-y-2 text-left">
+          <div className="space-y-2 text-start">
             {[...players].sort((a, b) => b.coins_collected - a.coins_collected).map(p => (
               <div key={p.id} className="flex justify-between p-2 rounded bg-background/50 text-sm">
-                <span>{p.nickname}{p.eliminated && ' (out)'}</span>
-                <span className="text-primary">{p.coins_collected} coins</span>
+                <span>{p.nickname}{p.eliminated && t('out')}</span>
+                <span className="text-primary">{t('coins', { n: p.coins_collected })}</span>
               </div>
             ))}
           </div>
@@ -94,15 +97,15 @@ const GameOver = ({ isWinner, winnerName, winMode, players, onPlayAgain, onGoHom
               className="flex-1"
               onClick={onGoHome}
             >
-              <Home className="w-4 h-4 mr-2" />
-              Home
+              <Home className="w-4 h-4 me-2" />
+              {t('home')}
             </Button>
             <Button 
               className="btn-gold flex-1"
               onClick={onPlayAgain}
             >
-              <RotateCcw className="w-4 h-4 mr-2" />
-              Play Again
+              <RotateCcw className="w-4 h-4 me-2" />
+              {t('playAgain')}
             </Button>
           </div>
         </Card>

@@ -6,6 +6,8 @@ import Logo from './Logo';
 import GameGrid from './GameGrid';
 import { PlacementCell } from '@/types/game';
 import { Coins, Check, Trash2 } from 'lucide-react';
+import { useI18n } from '@/i18n';
+
 
 interface PlacementPhaseProps {
   gridSize: number;
@@ -28,6 +30,7 @@ const PlacementPhase = ({
   onReady,
   isReady
 }: PlacementPhaseProps) => {
+  const { t } = useI18n();
   const [placements, setPlacements] = useState<PlacementCell[]>([]);
   const [selectedCell, setSelectedCell] = useState<{ x: number; y: number } | null>(null);
   const [coinInput, setCoinInput] = useState('');
@@ -106,16 +109,16 @@ const PlacementPhase = ({
         <Card className="card-glow">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Your coins to place:</p>
+              <p className="text-sm text-muted-foreground">{t('coinsToPlace')}</p>
               <p className="text-2xl font-bold text-primary">
-                <Coins className="w-5 h-5 inline mr-1" />
+                <Coins className="w-5 h-5 inline me-1" />
                 {remainingCoins} / {totalCoins}
               </p>
             </div>
-            <div className="text-right">
+            <div className="text-end">
               <p className="text-sm text-muted-foreground">{opponentNickname}</p>
               <p className={`text-sm font-medium ${isOpponentReady ? 'text-accent' : 'text-muted-foreground'}`}>
-                {isOpponentReady ? '✓ Ready!' : 'Placing coins...'}
+                {isOpponentReady ? t('ready') : t('placing')}
               </p>
             </div>
           </div>
@@ -126,8 +129,8 @@ const PlacementPhase = ({
           <Card className="card-glow text-center">
             <p className="text-foreground">
               {selectedCell 
-                ? `Cell (${selectedCell.x + 1}, ${selectedCell.y + 1}) selected`
-                : 'Click on cells to hide your coins!'
+                ? t('cellSelected', { x: selectedCell.x + 1, y: selectedCell.y + 1 })
+                : t('clickCells')
               }
             </p>
           </Card>
@@ -150,20 +153,20 @@ const PlacementPhase = ({
             <div className="flex gap-2 items-end">
               <div className="flex-1">
                 <label className="text-sm text-muted-foreground">
-                  Coins for cell ({selectedCell.x + 1}, {selectedCell.y + 1})
+                  {t('coinsForCell', { x: selectedCell.x + 1, y: selectedCell.y + 1 })}
                 </label>
                 <Input
                   type="number"
                   value={coinInput}
                   onChange={(e) => setCoinInput(e.target.value)}
-                  placeholder={`Max: ${remainingCoins + (placements.find(p => p.x === selectedCell.x && p.y === selectedCell.y)?.coins || 0)}`}
+                  placeholder={t('max', { n: remainingCoins + (placements.find(p => p.x === selectedCell.x && p.y === selectedCell.y)?.coins || 0) })}
                   className="mt-1 bg-background"
                   min={1}
                   max={remainingCoins + (placements.find(p => p.x === selectedCell.x && p.y === selectedCell.y)?.coins || 0)}
                 />
               </div>
               <Button onClick={handlePlaceCoins} className="btn-gold">
-                Place
+                {t('place')}
               </Button>
               {placements.find(p => p.x === selectedCell.x && p.y === selectedCell.y) && (
                 <Button onClick={handleRemoveCoins} variant="destructive" size="icon">
@@ -181,8 +184,8 @@ const PlacementPhase = ({
             onClick={handleReady}
             disabled={remainingCoins !== 0}
           >
-            <Check className="w-5 h-5 mr-2" />
-            {remainingCoins === 0 ? "I'm Ready!" : `Place all ${remainingCoins} remaining coins`}
+            <Check className="w-5 h-5 me-2" />
+            {remainingCoins === 0 ? t('imReady') : t('placeRemaining', { n: remainingCoins })}
           </Button>
         )}
 
@@ -190,7 +193,7 @@ const PlacementPhase = ({
           <Card className="card-glow text-center">
             <div className="flex items-center justify-center gap-2 text-accent">
               <Check className="w-5 h-5" />
-              You're ready! Waiting for {opponentNickname}...
+              {t('youReady', { name: opponentNickname })}
             </div>
           </Card>
         )}

@@ -6,6 +6,8 @@ import { Card } from '@/components/ui/card';
 import Logo from './Logo';
 import { Copy, Check, Settings, Play } from 'lucide-react';
 import { GamePlayer, WinMode } from '@/types/game';
+import { useI18n } from '@/i18n';
+
 
 interface GameSetupProps {
   roomCode: string;
@@ -15,17 +17,18 @@ interface GameSetupProps {
 }
 
 const GRID_SIZES = [
-  { value: 5, label: '5x5', description: 'Quick games' },
-  { value: 8, label: '8x8', description: 'Balanced' },
-  { value: 10, label: '10x10', description: 'Epic battles' },
+  { value: 5, label: '5x5', description: 'quick' as const },
+  { value: 8, label: '8x8', description: 'balanced' as const },
+  { value: 10, label: '10x10', description: 'epic' as const },
 ];
 
-const WIN_MODES: { value: WinMode; label: string; description: string }[] = [
-  { value: 'last_standing', label: 'Last one standing', description: 'Players are out when all their coins are found' },
-  { value: 'most_coins', label: 'Most coins', description: 'Ends when one player is wiped out; top collector wins' },
+const WIN_MODES: { value: WinMode; label: 'lastStanding' | 'mostCoins'; description: 'lastStandingDesc' | 'mostCoinsDesc' }[] = [
+  { value: 'last_standing', label: 'lastStanding', description: 'lastStandingDesc' },
+  { value: 'most_coins', label: 'mostCoins', description: 'mostCoinsDesc' },
 ];
 
 const GameSetup = ({ roomCode, isHost, players, onStartGame }: GameSetupProps) => {
+  const { t } = useI18n();
   const [gridSize, setGridSize] = useState(5);
   const [coinAmount, setCoinAmount] = useState(100);
   const [winMode, setWinMode] = useState<WinMode>('last_standing');
@@ -45,9 +48,9 @@ const GameSetup = ({ roomCode, isHost, players, onStartGame }: GameSetupProps) =
         <div className="flex justify-center"><Logo /></div>
 
         <Card className="card-glow text-center">
-          <p className="text-muted-foreground text-sm mb-2">Share this code with your friends:</p>
+          <p className="text-muted-foreground text-sm mb-2">{t('shareCode')}</p>
           <div className="flex items-center justify-center gap-3">
-            <span className="text-4xl font-mono font-black tracking-widest text-primary text-glow">{roomCode}</span>
+            <span className="text-4xl font-mono font-black tracking-widest text-primary text-glow" dir="ltr">{roomCode}</span>
             <Button variant="outline" size="icon" onClick={copyRoomCode} className="shrink-0">
               {copied ? <Check className="w-4 h-4 text-accent" /> : <Copy className="w-4 h-4" />}
             </Button>
@@ -57,51 +60,51 @@ const GameSetup = ({ roomCode, isHost, players, onStartGame }: GameSetupProps) =
         <Card className="card-glow">
           <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-            Players ({players.length})
+            {t('players')} ({players.length})
           </h3>
           <div className="space-y-3">
             {players.map(p => (
               <div key={p.id} className="flex items-center justify-between p-3 rounded-lg bg-background/50">
                 <span className="font-medium">{p.nickname}</span>
-                {p.is_host && <span className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary">Host</span>}
+                {p.is_host && <span className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary">{t('host')}</span>}
               </div>
             ))}
-            <div className="p-3 text-muted-foreground italic text-sm">Waiting for more players...</div>
+            <div className="p-3 text-muted-foreground italic text-sm">{t('waitingMore')}</div>
           </div>
         </Card>
 
         {isHost && (
           <Card className="card-glow">
             <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-              <Settings className="w-5 h-5" /> Game Settings
+              <Settings className="w-5 h-5" /> {t('settings')}
             </h3>
             <div className="space-y-4">
               <div>
-                <Label className="text-foreground">Grid Size</Label>
+                <Label className="text-foreground">{t('gridSize')}</Label>
                 <div className="grid grid-cols-3 gap-2 mt-2">
                   {GRID_SIZES.map(size => (
                     <button key={size.value} onClick={() => setGridSize(size.value)}
                       className={`p-3 rounded-lg border-2 transition-all ${gridSize === size.value ? 'border-primary bg-primary/10' : 'border-border hover:border-muted-foreground'}`}>
                       <div className="font-bold">{size.label}</div>
-                      <div className="text-xs text-muted-foreground">{size.description}</div>
+                      <div className="text-xs text-muted-foreground">{t(size.description)}</div>
                     </button>
                   ))}
                 </div>
               </div>
               <div>
-                <Label className="text-foreground">How to Win</Label>
+                <Label className="text-foreground">{t('howToWin')}</Label>
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   {WIN_MODES.map(m => (
                     <button key={m.value} onClick={() => setWinMode(m.value)}
-                      className={`p-3 rounded-lg border-2 text-left transition-all ${winMode === m.value ? 'border-primary bg-primary/10' : 'border-border hover:border-muted-foreground'}`}>
-                      <div className="font-bold text-sm">{m.label}</div>
-                      <div className="text-xs text-muted-foreground">{m.description}</div>
+                      className={`p-3 rounded-lg border-2 text-start transition-all ${winMode === m.value ? 'border-primary bg-primary/10' : 'border-border hover:border-muted-foreground'}`}>
+                      <div className="font-bold text-sm">{t(m.label)}</div>
+                      <div className="text-xs text-muted-foreground">{t(m.description)}</div>
                     </button>
                   ))}
                 </div>
               </div>
               <div>
-                <Label htmlFor="coins" className="text-foreground">Coins per Player</Label>
+                <Label htmlFor="coins" className="text-foreground">{t('coinsPerPlayer')}</Label>
                 <Input id="coins" type="number" value={coinAmount}
                   onChange={(e) => setCoinAmount(Math.max(10, parseInt(e.target.value) || 10))}
                   min={10} max={1000} className="mt-1 bg-background border-border" />
@@ -112,14 +115,14 @@ const GameSetup = ({ roomCode, isHost, players, onStartGame }: GameSetupProps) =
 
         {isHost ? (
           <Button className="btn-gold w-full text-lg py-6" onClick={() => onStartGame(gridSize, coinAmount, winMode)} disabled={!canStart}>
-            <Play className="w-5 h-5 mr-2" />
-            {canStart ? `Start Game (${players.length} players)` : 'Waiting for Players...'}
+            <Play className="w-5 h-5 me-2" />
+            {canStart ? t('startGame', { n: players.length }) : t('waitingPlayers')}
           </Button>
         ) : (
           <Card className="card-glow text-center">
             <div className="flex items-center justify-center gap-2 text-muted-foreground">
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              Waiting for {host?.nickname || 'host'} to start the game...
+              {t('waitingHost', { name: host?.nickname || t('host') })}
             </div>
           </Card>
         )}
