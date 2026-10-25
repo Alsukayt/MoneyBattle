@@ -226,6 +226,10 @@ const Index = () => {
         opponentCells={opponentCells}
         myAttacks={myAttacks}
         onAttack={handleAttack}
+        onEndTurn={async () => {
+          await updateRoom({ current_turn: playerRole === 'host' ? 'guest' : 'host' });
+          toast('Turn ended.');
+        }}
       />
     );
   }

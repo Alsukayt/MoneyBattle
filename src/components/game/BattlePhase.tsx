@@ -3,7 +3,8 @@ import { Card } from '@/components/ui/card';
 import Logo from './Logo';
 import GameGrid from './GameGrid';
 import { GameCell } from '@/types/game';
-import { Coins, Target, Shield } from 'lucide-react';
+import { Coins, Target, Shield, SkipForward } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface BattlePhaseProps {
   gridSize: number;
@@ -15,6 +16,7 @@ interface BattlePhaseProps {
   opponentCells: GameCell[];
   myAttacks: { x: number; y: number; hit: boolean; coins: number }[];
   onAttack: (x: number, y: number) => void;
+  onEndTurn?: () => void;
 }
 
 const BattlePhase = ({
@@ -26,7 +28,8 @@ const BattlePhase = ({
   myCells,
   opponentCells,
   myAttacks,
-  onAttack
+  onAttack,
+  onEndTurn
 }: BattlePhaseProps) => {
   const [lastHit, setLastHit] = useState<{ coins: number } | null>(null);
 
@@ -69,11 +72,17 @@ const BattlePhase = ({
 
         {/* Turn Indicator */}
         <Card className={`card-glow text-center ${isMyTurn ? 'border-primary' : 'border-muted'}`}>
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 flex-wrap">
             {isMyTurn ? (
               <>
                 <Target className="w-6 h-6 text-primary animate-pulse" />
                 <span className="text-xl font-bold text-primary">Your Turn - Attack!</span>
+                {onEndTurn && (
+                  <Button variant="outline" size="sm" onClick={onEndTurn} className="ml-4">
+                    <SkipForward className="w-4 h-4 mr-1" />
+                    End Turn
+                  </Button>
+                )}
               </>
             ) : (
               <>
