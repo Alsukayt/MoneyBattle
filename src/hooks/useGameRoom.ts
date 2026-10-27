@@ -69,7 +69,7 @@ export const useGameRoom = (roomCode: string | null, playerId: string | null) =>
 
   const updateRoom = async (updates: RoomUpdate) => {
     if (!room?.id) return;
-    setRoom(r => (r ? { ...r, ...(updates as Partial<GameRoom>) } : r));
+    setRoom(r => (r ? { ...r, ...(updates as unknown as Partial<GameRoom>) } : r));
     const { error } = await supabase.from('game_rooms').update(updates).eq('id', room.id);
     if (error) console.error('Error updating room:', error);
   };
