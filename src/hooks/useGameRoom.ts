@@ -193,6 +193,11 @@ export const useGameRoom = (roomCode: string | null, playerId: string | null) =>
       const all = (await freshPlayers()).map(p => (p.id === id ? { ...p, status: 'kicked' as const } : p));
       await updateRoom({ current_turn: nextTurnAfter(room, all, id), shots_used: 0, pending_shot: null });
     }
+    if (status === 'kicked' && room?.game_status === 'playing') {
+      const all = (await freshPlayers()).map(p => (p.id === id ? { ...p, status: 'kicked' as const } : p));
+      const alive = gamersOf(room, all).filter(p => !p.eliminated && p.ready);
+      if (alive.length <= 1) await updateRoom({ game_status: 'finished', winner: alive[0]?.id ?? null, pending_shot: null });
+    }
   };
 
   return {

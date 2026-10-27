@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import Logo from './Logo';
 import GameGrid from './GameGrid';
-import { PlacementCell } from '@/types/game';
+import { PlacementCell, coordLabel } from '@/types/game';
 import { Coins, Check, Trash2 } from 'lucide-react';
 import { useI18n } from '@/i18n';
 
@@ -129,7 +129,7 @@ const PlacementPhase = ({
           <Card className="card-glow text-center">
             <p className="text-foreground">
               {selectedCell 
-                ? t('cellSelected', { x: selectedCell.x + 1, y: selectedCell.y + 1 })
+                ? t('cellSelected', { c: coordLabel(selectedCell.x, selectedCell.y) })
                 : t('clickCells')
               }
             </p>
@@ -153,7 +153,7 @@ const PlacementPhase = ({
             <div className="flex gap-2 items-end">
               <div className="flex-1">
                 <label className="text-sm text-muted-foreground">
-                  {t('coinsForCell', { x: selectedCell.x + 1, y: selectedCell.y + 1 })}
+                  {t('coinsForCell', { c: coordLabel(selectedCell.x, selectedCell.y) })}
                 </label>
                 <Input
                   type="number"
