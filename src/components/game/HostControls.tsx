@@ -44,7 +44,7 @@ const HostControls = ({ room, players, meId, onChange, onSetStatus }: Props) => 
         </Button>
       </div>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] overflow-y-auto" aria-describedby={undefined}>
           <DialogHeader><DialogTitle>{t('inGameSettings')}</DialogTitle></DialogHeader>
           <RoomOptions room={room} onChange={onChange} />
           <p className="text-xs text-muted-foreground flex items-center gap-1"><Lock className="w-3 h-3" />{t('lockedSettings')}</p>
