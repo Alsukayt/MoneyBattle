@@ -110,6 +110,7 @@ export type Database = {
           ready: boolean
           room_id: string
           seat: number
+          status: string
         }
         Insert: {
           coins_collected?: number
@@ -121,6 +122,7 @@ export type Database = {
           ready?: boolean
           room_id: string
           seat: number
+          status?: string
         }
         Update: {
           coins_collected?: number
@@ -132,6 +134,7 @@ export type Database = {
           ready?: boolean
           room_id?: string
           seat?: number
+          status?: string
         }
         Relationships: [
           {
@@ -145,6 +148,7 @@ export type Database = {
       }
       game_rooms: {
         Row: {
+          approve_shots: boolean
           coin_amount: number
           created_at: string
           current_turn: string | null
@@ -153,14 +157,21 @@ export type Database = {
           guest_nickname: string | null
           guest_ready: boolean
           host_nickname: string
+          host_plays: boolean
           host_ready: boolean
+          host_sees_money: boolean
+          host_shoots: boolean
           id: string
+          pending_shot: Json | null
           room_code: string
+          shots_per_turn: number
+          shots_used: number
           updated_at: string
           win_mode: string
           winner: string | null
         }
         Insert: {
+          approve_shots?: boolean
           coin_amount?: number
           created_at?: string
           current_turn?: string | null
@@ -169,14 +180,21 @@ export type Database = {
           guest_nickname?: string | null
           guest_ready?: boolean
           host_nickname: string
+          host_plays?: boolean
           host_ready?: boolean
+          host_sees_money?: boolean
+          host_shoots?: boolean
           id?: string
+          pending_shot?: Json | null
           room_code: string
+          shots_per_turn?: number
+          shots_used?: number
           updated_at?: string
           win_mode?: string
           winner?: string | null
         }
         Update: {
+          approve_shots?: boolean
           coin_amount?: number
           created_at?: string
           current_turn?: string | null
@@ -185,9 +203,15 @@ export type Database = {
           guest_nickname?: string | null
           guest_ready?: boolean
           host_nickname?: string
+          host_plays?: boolean
           host_ready?: boolean
+          host_sees_money?: boolean
+          host_shoots?: boolean
           id?: string
+          pending_shot?: Json | null
           room_code?: string
+          shots_per_turn?: number
+          shots_used?: number
           updated_at?: string
           win_mode?: string
           winner?: string | null
