@@ -1,0 +1,2 @@
+- Game rules helpers (turn order, who plays, shot limits, approval) live in `src/types/game.ts`; keep UI and hook logic calling them so rules stay in one place.
+- Host options are columns on `game_rooms` and written live via `updateRoom`, so the same panel works before and during play and realtime syncs everyone.
