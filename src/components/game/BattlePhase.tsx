@@ -40,7 +40,7 @@ const BattlePhase = ({
   );
   const canEndTurn = (isMyTurn && !room.host_shoots) || (me.is_host && !!current);
 
-  const targets = gamers.filter(p => p.id !== shooterId && (amGamer ? p.id !== me.id || !room.host_shoots : true));
+  const targets = gamers.filter(p => p.id !== shooterId);
   const viewList = amGamer && !(me.is_host && room.host_shoots) ? gamers.filter(p => p.id !== me.id) : targets;
   const alive = viewList.filter(p => !p.eliminated);
   const [targetId, setTargetId] = useState<string | null>(alive[0]?.id ?? null);

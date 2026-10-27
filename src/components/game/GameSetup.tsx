@@ -123,7 +123,7 @@ const GameSetup = ({ room, isHost, players, onChange, onKick, onStartGame }: Gam
               <div>
                 <Label htmlFor="coins" className="text-foreground">{t('coinsPerPlayer')}</Label>
                 <Input id="coins" type="text" inputMode="numeric" value={coinText} placeholder="100"
-                  onChange={(e) => setCoinText(e.target.value.replace(/[^0-9]/g, ''))}
+                  onChange={(e) => setCoinText(e.target.value.replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d))).replace(/[^0-9]/g, ''))}
                   className="mt-1 bg-background border-border" />
                 {coinErr && <p className="text-xs text-destructive mt-1">{coinErr}</p>}
               </div>

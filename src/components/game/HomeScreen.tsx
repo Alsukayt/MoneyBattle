@@ -11,13 +11,14 @@ import { useI18n } from '@/i18n';
 interface HomeScreenProps {
   onCreateGame: (nickname: string) => void;
   onJoinGame: (nickname: string, roomCode: string) => void;
+  initialCode?: string;
 }
 
-const HomeScreen = ({ onCreateGame, onJoinGame }: HomeScreenProps) => {
+const HomeScreen = ({ onCreateGame, onJoinGame, initialCode = '' }: HomeScreenProps) => {
   const { t } = useI18n();
-  const [mode, setMode] = useState<'home' | 'create' | 'join'>('home');
+  const [mode, setMode] = useState<'home' | 'create' | 'join'>(initialCode ? 'join' : 'home');
   const [nickname, setNickname] = useState('');
-  const [roomCode, setRoomCode] = useState('');
+  const [roomCode, setRoomCode] = useState(initialCode);
   const [error, setError] = useState('');
 
   const handleCreate = () => {
