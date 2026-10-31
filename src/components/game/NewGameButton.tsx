@@ -30,6 +30,8 @@ const NewGameButton = ({ onNewGame, needsConfirm = true }: Props) => {
       variant="outline"
       size="sm"
       onClick={onClick}
+      aria-label={t('newGame')}
+      title={t('newGame')}
       className="fixed top-3 start-3 z-50 border-4 border-border bg-card hover:border-primary"
     >
       <Plus className="w-4 h-4 sm:me-1" />
