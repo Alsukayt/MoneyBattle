@@ -8,6 +8,7 @@ import PlacementPhase from '@/components/game/PlacementPhase';
 import BattlePhase from '@/components/game/BattlePhase';
 import GameOver from '@/components/game/GameOver';
 import HostControls from '@/components/game/HostControls';
+import NewGameButton from '@/components/game/NewGameButton';
 import Logo from '@/components/game/Logo';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
@@ -138,6 +139,9 @@ const Index = () => {
     return <HomeScreen onCreateGame={handleCreateGame} onJoinGame={handleJoinGame} initialCode={urlCode} />;
   }
 
+  const handleNewGame = () => { leave(); toast(t('tNewGame')); };
+
+  const screen = () => {
   if (!room || !me) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -234,15 +238,23 @@ const Index = () => {
   }
 
   const winner = players.find(p => p.id === room.winner);
+    return (
+      <GameOver
+        isWinner={room.winner === playerId}
+        winnerName={winner?.nickname || 'Winner'}
+        winMode={room.win_mode}
+        players={gamers}
+        onPlayAgain={leave}
+        onGoHome={leave}
+      />
+    );
+  };
+
   return (
-    <GameOver
-      isWinner={room.winner === playerId}
-      winnerName={winner?.nickname || 'Winner'}
-      winMode={room.win_mode}
-      players={gamers}
-      onPlayAgain={leave}
-      onGoHome={leave}
-    />
+    <>
+      <NewGameButton onNewGame={handleNewGame} needsConfirm={room?.game_status !== 'finished'} />
+      {screen()}
+    </>
   );
 };
 

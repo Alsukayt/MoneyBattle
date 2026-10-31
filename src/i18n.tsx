@@ -117,6 +117,13 @@ const en = {
   remaining: 'Left {n}',
   close: 'Close',
   rejoin: 'Rejoin your game',
+  newGame: 'NEW GAME',
+  newGameQ: 'Start a new game?',
+  newGameDesc: 'This leaves the current game and takes you back to the start.',
+  newGameYes: 'Yes, new game',
+  cancel: 'Cancel',
+  tNewGame: 'Fresh start — create a game or join one!',
+
 };
 
 
@@ -237,6 +244,13 @@ const ar: Record<TKey, string> = {
   remaining: 'باقي {n}',
   close: 'سكّر',
   rejoin: 'ارجع للعبتك',
+  newGame: 'لعبة جديدة',
+  newGameQ: 'تبي تسوي لعبة جديدة؟',
+  newGameDesc: 'بيطلّعك من اللعبة الحالية ويرجعك للبداية.',
+  newGameYes: 'إيه، لعبة جديدة',
+  cancel: 'تراجَع',
+  tNewGame: 'بداية جديدة — سوّ لعبة أو ادخل واحدة!',
+
 };
 
 
